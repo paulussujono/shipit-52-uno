@@ -1,0 +1,65 @@
+{
+  "name": "bgio-react-ts-starter",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.11.9",
+    "@testing-library/react": "^11.2.5",
+    "@testing-library/user-event": "^12.7.3",
+    "@types/jest": "^26.0.20",
+    "@types/node": "^12.20.4",
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.1",
+    "boardgame.io": "^0.43.3",
+    "esm": "^3.2.25",
+    "koa-mount": "^4.0.0",
+    "koa-static": "^5.0.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-helmet": "^6.1.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.3",
+    "typescript": "^4.2.2",
+    "web-vitals": "^1.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "devstart": "REACT_APP_WITH_SEPARATE_SERVER=1 npm start",
+    "devserver": "run-p nodemon-devserver compile-game-files:watch",
+    "build": "npm-run-all --continue-on-error compile-game-files cra-build",
+    "server": "node -r esm server.js",
+    "cra-build": "react-scripts build",
+    "compile-game-files": "tsc ./src/game/*.ts --outDir ./server --downlevelIteration true --skipLibCheck true",
+    "compile-game-files:watch": "watch 'npm run compile-game-files' ./src/game",
+    "nodemon-devserver": "nodemon --delay 1 --watch ./server -r esm devserver.js",
+    "format": "prettier --write 'src/**/*.js' '**/*.json' 'src/**/*.ts' 'src/**/*.tsx' 'server.js' 'devserver.js'",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/koa-static": "^4.0.1",
+    "eslint": "^7.20.0",
+    "nodemon": "^2.0.7",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.2.1",
+    "watch": "^1.0.2"
+  }
+}
