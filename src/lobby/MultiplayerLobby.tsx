@@ -6,7 +6,6 @@ import { Login } from './Login';
 import { MatchListItem, SelectedGameMatchList } from './SelectedGameMatchList';
 import { useMultiplayerLobby } from './useMultiplayerLobby';
 
-
 export const MultiplayerLobby = () => {
   const {
     lobbyMatches,
@@ -85,7 +84,9 @@ export const MultiplayerLobby = () => {
               <MatchListItem match={joinedMatch} />
               <p>
                 <button>
-                  <Link to="/play">GO TO YOUR MATCH</Link>
+                  <Link to={`${process.env.PUBLIC_URL}/play`}>
+                    GO TO YOUR MATCH
+                  </Link>
                 </button>
               </p>
               <div>

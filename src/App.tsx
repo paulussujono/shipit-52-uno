@@ -68,13 +68,13 @@ export const App = () => {
       <AuthProvider>
         <BgioLobbyApiProvider serverAddress={SERVER}>
           <MultiplayerLobbyProvider>
-            <BrowserRouter>
+            <BrowserRouter basename={"/uno"}>
               <Switch>
-                <Route exact path="/">
+                <Route exact path={`${process.env.PUBLIC_URL}/`}>
                   <MultiplayerNav />
                   <MultiplayerLobby />
                 </Route>
-                <Route path="/play">
+                <Route path={`${process.env.PUBLIC_URL}/play`}>
                   <MultiplayerNav />
                   <PlayPage />
                 </Route>
@@ -91,7 +91,7 @@ const LocalApp = () => {
   return (
     <BrowserRouter>
       <Switch>
-        <Route exact path="/">
+        <Route exact path={`${process.env.PUBLIC_URL}/`}>
           <DemoGameClient matchID="matchID" playerID="0" />
         </Route>
       </Switch>
@@ -106,7 +106,7 @@ const PlayPage = () => {
     return (
       <p>
         You are not currently joined in a match.{" "}
-        <Link to="/">Return to Lobby?</Link>
+        <Link to={`${process.env.PUBLIC_URL}/`}>Return to Lobby?</Link>
       </p>
     );
   }
