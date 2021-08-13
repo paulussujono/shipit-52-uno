@@ -1,7 +1,7 @@
 import { LobbyAPI } from 'boardgame.io';
 import { LobbyClient } from 'boardgame.io/client';
-import { MyGameState } from 'game/game';
 import React from 'react';
+import { MyGameState } from '../game/types';
 
 
 type LeaveMatchParams = {

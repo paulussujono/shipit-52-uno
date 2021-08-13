@@ -1,48 +1,47 @@
 import { LobbyAPI } from 'boardgame.io';
-import { defaultSetupData, MYGAME_NUMPLAYERS } from 'game/game';
 import { useAuth } from 'hooks';
 import React, { useEffect, useState } from 'react';
 import { useBgioLobbyApi } from '../bgio-contexts/useBgioLobbyApi';
-
+import { createInitialState, MAX_PLAYERS } from '../game/game';
 
 type MultiplayerLobbyCtxValue = {
   // lobby state
-  lobbyGames: string[]
-  lobbyMatches: { [gameName: string]: LobbyAPI.Match[] }
+  lobbyGames: string[];
+  lobbyMatches: { [gameName: string]: LobbyAPI.Match[] };
   lobbyMatchesError: {
-    [gameName: string]: string
-  }
-  selectedGame: string
-  selectedMatch: LobbyAPI.Match
+    [gameName: string]: string;
+  };
+  selectedGame: string;
+  selectedMatch: LobbyAPI.Match;
   // requests
-  updateLobbyMatchesForSelectedGame: () => Promise<LobbyAPI.MatchList>
-  updateLobbyGames: () => Promise<void>
-  handleSelectGameChange: (e) => void
-  handleCreateMatchButton: () => Promise<void>
+  updateLobbyMatchesForSelectedGame: () => Promise<LobbyAPI.MatchList>;
+  updateLobbyGames: () => Promise<void>;
+  handleSelectGameChange: (e) => void;
+  handleCreateMatchButton: () => Promise<void>;
   handleJoinMatch: (params: {
-    playerID: string
-    matchID?: string
-  }) => Promise<void>
-  handleLeaveJoinedMatch: () => Promise<void>
-  handleVerifyJoinedMatch: () => Promise<void>
+    playerID: string;
+    matchID?: string;
+  }) => Promise<void>;
+  handleLeaveJoinedMatch: () => Promise<void>;
+  handleVerifyJoinedMatch: () => Promise<void>;
   // request statuses
-  lobbyGamesError: string
-  createMatchError: string
-  verifyMatchSuccess: string
-  verifyMatchError: string
-}
+  lobbyGamesError: string;
+  createMatchError: string;
+  verifyMatchSuccess: string;
+  verifyMatchError: string;
+};
 type MultiplayerLobbyProviderProps = {
-  children: React.ReactNode
-}
+  children: React.ReactNode;
+};
 
 const MultiplayerLobbyContext = React.createContext<
   MultiplayerLobbyCtxValue | undefined
->(undefined)
+>(undefined);
 
 export function MultiplayerLobbyProvider({
   children,
 }: MultiplayerLobbyProviderProps) {
-  const { updateCredentials, storedCredentials, isAuthenticated } = useAuth()
+  const { updateCredentials, storedCredentials, isAuthenticated } = useAuth();
   const {
     getLobbyGames,
     getLobbyMatches,
@@ -51,83 +50,83 @@ export function MultiplayerLobbyProvider({
     joinMatch,
     leaveMatch,
     updatePlayer,
-  } = useBgioLobbyApi()
-  const joinedMatchID = storedCredentials?.matchID
+  } = useBgioLobbyApi();
+  const joinedMatchID = storedCredentials?.matchID;
 
   // STATE
-  const [lobbyGames, setLobbyGames] = useState<string[]>([])
-  const [lobbyGamesError, setLobbyGamesError] = useState("")
+  const [lobbyGames, setLobbyGames] = useState<string[]>([]);
+  const [lobbyGamesError, setLobbyGamesError] = useState("");
   const [lobbyMatches, setLobbyMatches] = useState<{
-    [gameName: string]: LobbyAPI.Match[]
-  }>({})
+    [gameName: string]: LobbyAPI.Match[];
+  }>({});
   const [lobbyMatchesError, setLobbyMatchesError] = useState<{
-    [gameName: string]: string
-  }>({})
-  const [verifyMatchSuccess, setVerifyMatchSuccess] = useState("")
-  const [verifyMatchError, setVerifyMatchError] = useState("")
-  const [createMatchError, setCreateMatchError] = useState("")
-  const [selectedGame, setSelectedGame] = useState("")
+    [gameName: string]: string;
+  }>({});
+  const [verifyMatchSuccess, setVerifyMatchSuccess] = useState("");
+  const [verifyMatchError, setVerifyMatchError] = useState("");
+  const [createMatchError, setCreateMatchError] = useState("");
+  const [selectedGame, setSelectedGame] = useState("");
   const [selectedMatch, setSelectedMatch] = useState<
     LobbyAPI.Match | undefined
-  >(undefined)
+  >(undefined);
 
   // effect -- initial fetch games
   useEffect(() => {
-    updateLobbyGames()
+    updateLobbyGames();
     // eslint reason: Only want to fetch games on mount for now.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   // effect -- auto-select first game (once they're fetched)
   useEffect(() => {
-    const firstAvailableGame = lobbyGames?.[0]
+    const firstAvailableGame = lobbyGames?.[0];
     if (firstAvailableGame && !selectedGame) {
-      setSelectedGame(firstAvailableGame)
+      setSelectedGame(firstAvailableGame);
     }
-  }, [lobbyGames, selectedGame])
+  }, [lobbyGames, selectedGame]);
 
   // effect -- fetch matches on game select (including initial auto-selection)
   useEffect(() => {
     if (selectedGame) {
-      updateLobbyMatchesForSelectedGame()
+      updateLobbyMatchesForSelectedGame();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedGame])
+  }, [selectedGame]);
 
   // effect - verify currently joined match once games list is received (and first is auto-selected)
   React.useEffect(() => {
     if (Boolean(storedCredentials.matchID)) {
-      handleVerifyJoinedMatch()
+      handleVerifyJoinedMatch();
     }
-  }, [storedCredentials])
+  }, [storedCredentials]);
 
   async function updateLobbyGames() {
-    setLobbyGamesError("")
+    setLobbyGamesError("");
     try {
-      const games = await getLobbyGames()
+      const games = await getLobbyGames();
       if (games) {
-        setLobbyGamesError("")
-        setLobbyGames(games)
+        setLobbyGamesError("");
+        setLobbyGames(games);
       }
     } catch (error) {
-      setLobbyGamesError(error.message)
-      console.log(`🚀 ~ getLobbyGames ~ error`, error)
+      setLobbyGamesError(error.message);
+      console.log(`🚀 ~ getLobbyGames ~ error`, error);
     }
   }
   async function updateLobbyMatchesForSelectedGame() {
     try {
-      const matches = await getLobbyMatches(selectedGame)
+      const matches = await getLobbyMatches(selectedGame);
       if (matches) {
         setLobbyMatchesError((s) => ({
           ...s,
           [selectedGame]: undefined,
-        }))
-        setLobbyMatches((s) => ({ ...s, [selectedGame]: matches.matches }))
-        return matches
+        }));
+        setLobbyMatches((s) => ({ ...s, [selectedGame]: matches.matches }));
+        return matches;
       }
     } catch (error) {
-      setLobbyMatchesError((s) => ({ ...s, [selectedGame]: error.message }))
-      console.log(`🚀 ~ getLobbyMatches ~ error`, error)
+      setLobbyMatchesError((s) => ({ ...s, [selectedGame]: error.message }));
+      console.log(`🚀 ~ getLobbyMatches ~ error`, error);
     }
   }
   // handler verify currently joined match
@@ -138,7 +137,7 @@ export function MultiplayerLobbyProvider({
       matchID,
       playerID,
       playerCredentials,
-    } = storedCredentials
+    } = storedCredentials;
     // refresh our credentials with no changes (ping)
     return updatePlayer(gameName, matchID, {
       playerID,
@@ -147,19 +146,19 @@ export function MultiplayerLobbyProvider({
       // data: {},
     }).then(
       (success) => {
-        setVerifyMatchSuccess(`You have a game to play!`)
-        setVerifyMatchError("")
+        setVerifyMatchSuccess(`You have a game to play!`);
+        setVerifyMatchError("");
       },
       (failure) => {
-        setVerifyMatchSuccess("")
-        setVerifyMatchError(`${failure}`)
+        setVerifyMatchSuccess("");
+        setVerifyMatchError(`${failure}`);
       }
-    )
+    );
   }
   // handler select game
   const handleSelectGameChange = (e) => {
-    setSelectedGame(e.target.value)
-  }
+    setSelectedGame(e.target.value);
+  };
 
   // handler createMatch- create a match, then select it (which refreshes the match), then join it
   async function handleCreateMatchButton() {
@@ -167,23 +166,23 @@ export function MultiplayerLobbyProvider({
     if (!isAuthenticated) {
       setCreateMatchError(
         "You must login with a username before you can create a game"
-      )
-      return
+      );
+      return;
     }
     try {
       const { matchID } = await createMatch(`${selectedGame}`, {
-        setupData: defaultSetupData,
-        numPlayers: MYGAME_NUMPLAYERS,
+        setupData: createInitialState(),
+        numPlayers: MAX_PLAYERS,
         unlisted: false,
-      })
+      });
       if (matchID) {
-        setCreateMatchError("")
-        await handleJoinMatch({ playerID: "0", matchID })
-        await updateLobbyMatchesForSelectedGame()
+        setCreateMatchError("");
+        await handleJoinMatch({ playerID: "0", matchID });
+        await updateLobbyMatchesForSelectedGame();
       }
     } catch (error) {
-      setCreateMatchError(error.message)
-      console.log(`🚀 ~ createMatch ~ error`, error)
+      setCreateMatchError(error.message);
+      console.log(`🚀 ~ createMatch ~ error`, error);
     }
   }
 
@@ -192,19 +191,25 @@ export function MultiplayerLobbyProvider({
     playerID,
     matchID,
   }: {
-    playerID: string
-    matchID: string
+    playerID: string;
+    matchID: string;
   }) {
-    const playerName = storedCredentials.playerName
-    const gameName = selectedGame
-    const { playerCredentials } = await joinMatch({
-      gameName,
-      matchID,
-      options: {
-        playerID,
-        playerName,
-      },
-    })
+    const playerName = storedCredentials.playerName;
+    const gameName = selectedGame;
+
+    let playerCredentials = undefined;
+    try {
+      ({ playerCredentials } = await joinMatch({
+        gameName,
+        matchID,
+        options: {
+          playerID,
+          playerName,
+        },
+      }));
+    } catch (error) {
+      alert("Try a different player ID");
+    }
     if (playerCredentials) {
       const newCredentials = {
         playerName,
@@ -212,45 +217,50 @@ export function MultiplayerLobbyProvider({
         gameName,
         playerCredentials: `${playerCredentials}`,
         playerID,
-      }
+      };
       //save joined match
-      updateCredentials(newCredentials)
+      updateCredentials(newCredentials);
       // refresh match info
-      const refreshedMatch = await getMatch(gameName, matchID)
+      const refreshedMatch = await getMatch(gameName, matchID);
       if (refreshedMatch) {
         //double check the server has matching player data
         const serverPlayer = refreshedMatch.players.find(
           (playerMetadata) => playerMetadata.id.toString() === playerID
-        )
-        const serverPlayerName = serverPlayer?.name
-        const isConfirmedJoin = serverPlayerName === playerName
+        );
+        const serverPlayerName = serverPlayer?.name;
+        const isConfirmedJoin = serverPlayerName === playerName;
       }
     } else {
-      console.log(`🚀 handleJoinMatch ~ FAILED TO JOIN`)
+      console.log(`🚀 handleJoinMatch ~ FAILED TO JOIN`);
     }
   }
 
   // handle leave current match
   async function handleLeaveJoinedMatch() {
-    const { gameName, matchID, playerID, playerCredentials } = storedCredentials
+    const {
+      gameName,
+      matchID,
+      playerID,
+      playerCredentials,
+    } = storedCredentials;
     updateCredentials({
       gameName: "",
       matchID: "",
       playerID: "",
       playerCredentials: "",
-    })
-    setVerifyMatchSuccess("")
-    setVerifyMatchError("")
+    });
+    setVerifyMatchSuccess("");
+    setVerifyMatchError("");
     try {
       await leaveMatch({
         gameName,
         matchID,
         options: { playerID, credentials: playerCredentials },
-      })
+      });
     } catch (error) {
-      console.log(`🚀 ~ handleLeaveJoinedMatch ~ error`, error)
+      console.log(`🚀 ~ handleLeaveJoinedMatch ~ error`, error);
     }
-    await updateLobbyMatchesForSelectedGame()
+    await updateLobbyMatchesForSelectedGame();
   }
 
   return (
@@ -276,15 +286,15 @@ export function MultiplayerLobbyProvider({
     >
       {children}
     </MultiplayerLobbyContext.Provider>
-  )
+  );
 }
 
 export function useMultiplayerLobby() {
-  const context = React.useContext(MultiplayerLobbyContext)
+  const context = React.useContext(MultiplayerLobbyContext);
   if (context === undefined) {
     throw new Error(
       "useMultiplayerLobby must be used within a MultiplayerLobbyProvider"
-    )
+    );
   }
-  return context
+  return context;
 }

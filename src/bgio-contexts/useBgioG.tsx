@@ -1,10 +1,11 @@
+import { MyGameState } from 'game/types';
 import * as React from 'react';
 
-type BgioGProviderProps = { children: React.ReactNode; G: any };
+type BgioGProviderProps = { children: React.ReactNode; G: MyGameState };
 
 const BgioGContext = React.createContext<
   | {
-      G: any;
+      G: MyGameState;
     }
   | undefined
 >(undefined);

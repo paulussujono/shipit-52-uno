@@ -11,9 +11,9 @@ import {
   Switch
   } from 'react-router-dom';
 import { Board } from './Board';
-import { myGame } from './game/game';
+import { localTestingNumPlayers } from './constants';
+import { unoGame } from './game/game';
 import { MultiplayerNav } from './Nav';
-
 
 // ! Three Options:
 // * A local game (for game development) `npm run start`
@@ -42,9 +42,9 @@ const reduxDevTools =
   (window as any).__REDUX_DEVTOOLS_EXTENSION__();
 
 const bgioClientOptions = {
-  game: myGame,
+  game: unoGame,
   board: Board,
-  numPlayers: 2,
+  numPlayers: localTestingNumPlayers, // for when testing locally
 };
 
 const DemoGameClient = Client({
@@ -73,10 +73,6 @@ export const App = () => {
                 <Route exact path="/">
                   <MultiplayerNav />
                   <MultiplayerLobby />
-                </Route>
-                <Route path="/demo">
-                  <MultiplayerNav />
-                  <DemoGameClient matchID="matchID" playerID="0" />
                 </Route>
                 <Route path="/play">
                   <MultiplayerNav />

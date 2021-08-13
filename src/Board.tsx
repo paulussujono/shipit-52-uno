@@ -1,6 +1,6 @@
 import { ChatMessage } from 'boardgame.io';
 import { BoardProps } from 'boardgame.io/react';
-import { ExampleUI } from 'ui/ExampleUI';
+import { ExampleUI } from 'ui';
 import {
   BgioClientInfoProvider,
   BgioGProvider,
