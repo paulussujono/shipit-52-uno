@@ -29,9 +29,7 @@ const isLocalApp = isDevEnv && !isSeparateServer;
 const hostname = window?.location?.hostname ?? "";
 const protocol = window?.location?.protocol ?? "";
 const port = window?.location?.port ?? "";
-const deploymentServerAddr = `${protocol}//${hostname}${
-  port ? `:${port}` : ``
-}`;
+const deploymentServerAddr = `https://apps.paulussujono.com/uno`;
 const localServerAddr = `http://localhost:8000`;
 const SERVER = isDeploymentEnv ? deploymentServerAddr : localServerAddr;
 
